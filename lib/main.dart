@@ -2,6 +2,7 @@ import 'package:fab_circular_menu/fab_circular_menu.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/animation.dart';
+import 'package:Docker/Containerpage.dart';
 
 
 main() {
@@ -9,6 +10,9 @@ main() {
 }
 
 String x;
+String cmd1;
+var addcontainer;
+
 class MyApp extends StatefulWidget {
   @override
   _MyAppState createState() => new _MyAppState();
@@ -38,6 +42,8 @@ class _MyAppState extends State<MyApp>
     animationcontroller.forward();
   }
   Widget build(BuildContext context) {
+
+    
     final double width = MediaQuery.of(context).size.width;
     return AnimatedBuilder(
       animation: animationcontroller,
@@ -67,9 +73,38 @@ class _MyAppState extends State<MyApp>
                   transform: Matrix4.translationValues(muchDelayedAnimation.value*width, 0, 0),
                                   child: Padding(
                     padding: const EdgeInsets.all(8.0),
-                    child: Container(width: 150, height: 40 ,child: RaisedButton(
+                    child: Container(width: 150, height: 40 ,
+                    /*child: FlatButton(
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
                       color: Colors.cyanAccent[700],
                       child: Text('Continue'),
+                      onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SecondRoute()),
+                      );
+                      },
+                    ),*/
+                    child: MaterialButton(
+                      /*elevation: 5,
+                      color: Colors.white24,
+                      splashColor: Colors.cyanAccent,
+                      highlightColor: Colors.cyanAccent[700],
+                      animationDuration: Duration(seconds: 5), 
+                      shape: RoundedRectangleBorder(*/
+
+                        //height: MediaQuery.of(context).size.height/15,
+                      //minWidth: MediaQuery.of(context).size.width/3,
+                       elevation: 5,
+                       highlightColor: Colors.cyanAccent[700],
+                       splashColor: Colors.cyanAccent,
+                       color: Colors.grey[600],
+                       animationDuration: Duration(seconds: 5),
+                        shape: RoundedRectangleBorder(
+
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text('Next'),
                       onPressed: () {
                       Navigator.push(
                         context,
@@ -102,17 +137,17 @@ class _SecondRouteState extends State<SecondRoute>
   var webdata;
 
   web(cmd) async {
-    var url = "http://192.168.0.113/cgi-bin/cmd.py?x=${cmd}";
+    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
     var r = await http.get(url);
 
     setState(() {
       webdata = r.body;
     });
 
-    // print(webdata);
+   print(webdata);
   }
 
-  get floatingActionButton => null;
+  //get floatingActionButton => null;
   @override
   void initState() {
     super.initState();
@@ -132,33 +167,35 @@ class _SecondRouteState extends State<SecondRoute>
       builder: (BuildContext context, Widget child){
       return Scaffold(
       //backgroundColor: Colors.black,
-        appBar: AppBar(
+        /*appBar: AppBar(
         backgroundColor: Colors.white12,
         title: Text("Docker"),
-        ),
+        ),*/
         floatingActionButton: FabCircularMenu(
         ringDiameter: width*0.9,
         ringWidth: width*1*0.2,
           children: <Widget>[
             IconButton(icon: Icon(Icons.storage, color: Colors.grey[700],), onPressed: () {
-              print('Home');
-              String cmd = "docker volume ls";
-              web(cmd);
-              Text(webdata ?? "Docker volumes:");
+              Navigator.push(context,
+              MaterialPageRoute(builder: (context) => Containeroutput())
+              );
             }),
             IconButton(icon: Icon(Icons.crop_square,color: Colors.grey[700],), onPressed: () {
-              print('Favorite');
-              String cmd = "docker ps";
-              web(cmd);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Containerpage()),
+                      );
             }),
             IconButton(icon: Icon(Icons.image,color: Colors.grey[700],), onPressed: () {
-              print('Favorite');
-              String cmd = "docker images";
-              web(cmd);
-              Text(webdata ?? "Docker images:");
+              Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+              //web(cmd);
+              //Text(webdata ?? "Docker images:");
             }),
             IconButton(icon: Icon(Icons.network_check,color: Colors.grey[700],), onPressed: () {
-              print('Favorite');
+              print('Networks');
+              String cmd = "docker network ls";
+              web(cmd);
+              Text(webdata ?? "Docker Networks:");
             }),
           ]
           ),
@@ -166,29 +203,487 @@ class _SecondRouteState extends State<SecondRoute>
         transform: Matrix4.translationValues(animation.value* width, 0, 0),
         child: Container(
         height: double.infinity,
-        margin: EdgeInsets.all(50),
+        margin: EdgeInsets.all(70),
         //color: Colors.grey,
         child: Column(
           children: <Widget>[
               Text("Enter ur linux cmd :"),
               TextField(
                 onChanged: (value) {
-                  cmd = value;
+                  cmd1 = value;
                 },
               ),
-              FlatButton(
-                color: Colors.grey[700],
-                  onPressed: () {
-                    web(cmd);
+              /*Padding(
+                padding: const EdgeInsets.all(25.0),
+                child: FlatButton(
+                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                    color: Colors.grey[700],
+                      onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
+                      },
+                      child: Text('click here')),
+              ),*/
+              SizedBox(height: 25,),
+              MaterialButton(
+                height: MediaQuery.of(context).size.height/15,
+                minWidth: MediaQuery.of(context).size.width/3,
+                elevation: 5,
+                highlightColor: Colors.cyanAccent[700],
+                splashColor: Colors.cyanAccent,
+                color: Colors.grey[600],
+                animationDuration: Duration(seconds: 5),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8)
+                ),
+                child: Text("Submit"),
+                onPressed: (){
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
+                },
+              ),/*
+              SizedBox(
+                height: 5,
+              ),
+              Text("output is been redirected.."),*/
+              SizedBox(height: 40,),
+              Text("Get complete control over :", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400,)),
+              /*Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: FlatButton(
+                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+                  color: Colors.green,
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Containerpage()));
+                  }, child: Text('Container'),
+                ),
+              ),*/
+              SizedBox(height: 10,),
+              Padding(
+                padding: EdgeInsets.all(15.0),
+                child: MaterialButton(
+                  color: Colors.grey,
+                  splashColor: Colors.deepPurple,
+                  highlightColor: Colors.purple,
+                  elevation: 2,
+                  height: MediaQuery.of(context).size.height/13,
+                  minWidth: MediaQuery.of(context).size.width/2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)
+                  ),
+                  child: Text('Container'),
+                  onPressed: (){
+                    Navigator.push(context, MaterialPageRoute(builder: (context)=> Containerpage()));
                   },
-                  child: Text('click here')),
-              Text(webdata ?? "output is coming .."),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(15.0),
+                child: MaterialButton(
+                  color: Colors.grey,
+                  splashColor: Colors.green[900],
+                  highlightColor: Colors.teal[800],
+                  elevation: 2,
+                  height: MediaQuery.of(context).size.height/13,
+                  minWidth: MediaQuery.of(context).size.width/2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)
+                  ),
+                  child: Text('Volume'),
+                  onPressed: (){
+
+                  },
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(15.0),
+                child: MaterialButton(
+                  color: Colors.grey,
+                  splashColor: Colors.blue[900],
+                  highlightColor: Colors.indigo,
+                  height: MediaQuery.of(context).size.height/13,
+                  minWidth: MediaQuery.of(context).size.width/2,
+                  elevation: 2,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)
+                  ),
+                  child: Text('Network'),
+                  onPressed: (){
+
+                  },
+                ),
+              ),
         ],
         ),
       ),
       ),
     );
     }
+    );
+  }
+}
+
+
+
+/*class Containerpage extends StatefulWidget {
+  @override
+  _ContainerpageState createState() => _ContainerpageState(); 
+}
+
+class _ContainerpageState extends State<Containerpage> {
+  var webdata;
+  var deletecontainer;
+  var inspectcontainer;
+  var os;
+
+  /*web(cmd) async {
+    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
+    var r = await http.get(url);
+
+    setState(() {
+      webdata = r.body;
+    });
+
+    // print(webdata);
+  }*/
+
+  create(name)async{
+    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${name}";
+    var r = await http.get(url);
+  setState(() {
+    webdata = r.body;
+  });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final pageheight = MediaQuery.of(context).size.height;
+    final pagewidth = MediaQuery.of(context).size.width;
+    return Scaffold(
+      appBar: AppBar(title: Text('Docker Container'),),
+      body: Column(
+          children: <Widget>[
+            
+            Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                child: Container(
+                  child: Column(
+                    children: <Widget>[
+                      Container(child: Text('Input name of container to be created with centos operating system:', style: TextStyle(color: Colors.white),),),
+                      Container(
+                        margin: EdgeInsets.all(20),
+                        child: TextField(
+                          onChanged: (name){
+                            addcontainer = name;
+                          },
+                        ),
+                      ),
+                      FloatingActionButton.extended(
+                      label: Text('Submit'),
+                      onPressed: (){
+                        Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => Containerop()));
+                        //create(addcontainer)
+                      },),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(webdata ?? 'Output'),
+                      ),
+                      Container(child: Text('Input name of container to be deleted:', style: TextStyle(color: Colors.white),),),
+                      Container(
+                        height: pageheight/8,
+                        width: pagewidth/2,
+                        child: TextField(
+                          onChanged: (name){
+                            deletecontainer = name;
+                          },
+                        ),
+                      ),
+                      Container(child: Text('Input name of container to be inspected:', style: TextStyle(color: Colors.white),),),
+                      Container(
+                        height: pageheight/8,
+                        width: pagewidth/2,
+                        child: TextField(
+                          onChanged: (containercommand){
+                            //cmd = containercommand;
+                          },
+                        ),
+                      ),
+                      Container(child: Text('Input name of container to get the ip:', style: TextStyle(color: Colors.white),),),
+                      Container(
+                        height: pageheight/8,
+                        width: pagewidth/2,
+                        child: TextField(
+                          onChanged: (containercommand){
+                            //cmd = containercommand;
+                          },
+                        ),
+                      ),
+                      /*Container(child: Text('Input name of container to be created:', style: TextStyle(color: Colors.white),),),
+                      Container(
+                        height: pageheight/8,
+                        width: pagewidth/2,
+                        child: TextField(
+                          onChanged: (containercommand){
+                            //cmd = containercommand;
+                          },
+                        ),
+                      ),*/
+                    ],
+                  ),
+                ),
+              ),
+            )
+          ],
+        ),
+    );
+  }
+}
+*/
+
+
+class Containeroutput extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('DraggableScrollableSheet'),
+      ),
+      body: SizedBox.expand(
+        child: DraggableScrollableSheet(
+          builder: (BuildContext context, ScrollController scrollController) {
+            return Container(
+              color: Colors.blue[100],
+              child: ListView.builder(
+                controller: scrollController,
+                itemBuilder: (BuildContext context, int index) {
+                  return Container(
+                    height: 600,
+                    width: 600,
+                    color: Colors.blue,
+                  );
+                },
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+
+class MyHomePage extends StatefulWidget {
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  ScrollController _scrollController;
+
+  List allSlides = [
+    {'slideName': 'slideOne', 'selected': false},
+    {'slideName': 'slideTwo', 'selected': false},
+    {'slideName': 'slideThree', 'selected': false},
+    {'slideName': 'slideFour', 'selected': false},
+    {'slideName': 'slideFive', 'selected': false},
+    {'slideName': 'slideSix', 'selected': false},
+    {'slideName': 'slideSeven', 'selected': false},
+    {'slideName': 'slideEight', 'selected': false},
+    {'slideName': 'slideNine', 'selected': false}
+  ];
+
+  var selectedSlide;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _scrollController = ScrollController();
+    _scrollController.addListener(changeSelector);
+    setState(() {
+      selectedSlide = allSlides[0];
+      selectedSlide['selected'] = true;
+    });
+  }
+
+  changeSelector() {
+    var maxScrollVal = _scrollController.position.maxScrollExtent;
+
+    var divisor = (maxScrollVal / allSlides.length) + 20;
+
+    var scrollValue = _scrollController.offset.round();
+    var slideValue = (scrollValue / divisor).round();
+
+    var currentSlide = allSlides.indexWhere((slide) => slide['selected']);
+
+    setState(() {
+      allSlides[currentSlide]['selected'] = false;
+      selectedSlide = allSlides[slideValue];
+      selectedSlide['selected'] = true;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: Text('Scroll Tricks'),
+          centerTitle: true,
+        ),
+        body: Row(
+          children: <Widget>[
+            SizedBox(width: 15.0),
+            Container(
+              width: MediaQuery.of(context).size.width / 3,
+              child: ListView(
+                  children: allSlides.map((element) {
+                return getTitles(element);
+              }).toList()),
+            ),
+            SizedBox(width: 10.0),
+            Container(
+              width: (MediaQuery.of(context).size.width / 3) * 2 - 25.0,
+              child: ListView(
+                controller: _scrollController,
+                children: allSlides.map((element) {
+                  return getCards(element);
+                }).toList(),
+              ),
+            )
+          ],
+        ));
+  }
+
+  Widget getCards(slide) {
+    return Padding(
+      padding: EdgeInsets.only(top: 15.0, right: 10.0),
+      child: Container(
+        decoration: BoxDecoration(
+          border: Border.all(
+              color: Colors.black, style: BorderStyle.solid, width: 1.0),
+        ),
+        height: 200.0,
+        width: 125.0,
+        child: Center(
+          child: Text(
+            slide['slideName'],
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      ),
+    );
+  }
+
+  scrollToSlide(inputSlide) {
+    var whichSlide = allSlides
+        .indexWhere((slide) => slide['slideName'] == inputSlide['slideName']);
+
+    var maxScrollValue = _scrollController.position.maxScrollExtent;
+
+    var divisor = (maxScrollValue / allSlides.length) + 20;
+
+    var scrollToValue = whichSlide * divisor;
+
+    _scrollController.animateTo(scrollToValue,
+        curve: Curves.easeIn, duration: Duration(milliseconds: 1000));
+  }
+
+  Widget getTitles(slide) {
+    return InkWell(
+      onTap: () {
+        scrollToSlide(slide);
+      },
+      child: Padding(
+        padding: EdgeInsets.only(top: 15.0),
+        child: Text(
+          slide['slideName'],
+          style: TextStyle(
+              fontWeight:
+                  slide['selected'] ? FontWeight.bold : FontWeight.normal,
+              fontSize: 17.0),
+        ),
+      ),
+    );
+  }
+}
+
+class Containerop extends StatefulWidget {
+  @override
+  _ContaineropState createState() => _ContaineropState();
+}
+
+class _ContaineropState extends State<Containerop> {
+  String cmd = 'date';
+  var webdata;
+  /*web(cmd) async {
+    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
+    var r = await http.get(url);
+
+    setState(() {
+      webdata = r.body;
+    });
+
+   print(webdata);
+  }*/
+
+  create(name)async{
+    var url = "http://192.168.0.109/cgi-bin/createcont.py?x=${name}";
+    var r = await http.get(url);
+  setState(() {
+    webdata = r.body;
+  });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    create(addcontainer);
+    //web(cmd);
+    print(webdata);
+    return Scaffold(
+      appBar: AppBar(title: Text('Creating container for Centos O.S of latest version....'),),
+      body: Container(
+        margin: EdgeInsets.all(50),
+        child: Column(
+            children: <Widget>[
+              Text(webdata ?? 'The output is :'),
+            ],
+          ),
+      )
+      );
+  }
+}
+
+
+class Cmdoutput extends StatefulWidget {
+  @override
+  _CmdoutputState createState() => _CmdoutputState();
+}
+
+class _CmdoutputState extends State<Cmdoutput> {
+ 
+  var cmd;
+  var webdata;
+
+  web(cmd) async {
+    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
+    var r = await http.get(url);
+
+    setState(() {
+      webdata = r.body;
+    });
+
+   print(webdata);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    web(cmd1);
+    return Scaffold(
+      body: Container(
+        //margin: EdgeInsets.all(50),
+        alignment: Alignment.center,
+        child: Text( webdata ?? 'The command output is.../n'),
+      ),
     );
   }
 }
