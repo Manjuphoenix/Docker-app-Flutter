@@ -3,10 +3,20 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/animation.dart';
 import 'package:Docker/Containerpage.dart';
+import 'package:Docker/Volumepage.dart';
+import 'package:Docker/Networkpage.dart';
 
 
 main() {
-  runApp(new MaterialApp( theme: ThemeData.dark() ,home: new MyApp(),));
+  runApp(new MaterialApp( theme: ThemeData.dark() ,home: new MyApp(),
+  initialRoute: 'MyApp',
+  routes: {
+    'MyApp': (context) => MyApp(),
+    'Volumepage': (context) => DockerVolume(),
+    'Containerpage': (context) => Containerpage(),
+    'Networkpage': (context) => DockerNetwork(),
+  },
+  ));
 }
 
 String x;
@@ -131,13 +141,14 @@ class SecondRoute extends StatefulWidget {
 
 class _SecondRouteState extends State<SecondRoute>
  with SingleTickerProviderStateMixin {
+   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
   Animation animation;
   AnimationController animationController;
   var cmd;
   var webdata;
 
   web(cmd) async {
-    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
+    var url = "http://192.168.43.171/cgi-bin/cmd.py?x=${cmd}";
     var r = await http.get(url);
 
     setState(() {
@@ -171,9 +182,20 @@ class _SecondRouteState extends State<SecondRoute>
         backgroundColor: Colors.white12,
         title: Text("Docker"),
         ),*/
+        /*body: RaisedButton(
+          onPressed: () {
+            if (fabKey.currentState.isOpen) {
+              fabKey.currentState.close();
+            } else {
+              fabKey.currentState.open();
+            }
+          },
+          child: Text('Toggle menu')
+        ),*/
         floatingActionButton: FabCircularMenu(
         ringDiameter: width*0.9,
         ringWidth: width*1*0.2,
+        key: fabKey,
           children: <Widget>[
             IconButton(icon: Icon(Icons.storage, color: Colors.grey[700],), onPressed: () {
               Navigator.push(context,
@@ -181,9 +203,9 @@ class _SecondRouteState extends State<SecondRoute>
               );
             }),
             IconButton(icon: Icon(Icons.crop_square,color: Colors.grey[700],), onPressed: () {
-                      Navigator.push(
+                      Navigator.pushNamed(
                         context,
-                        MaterialPageRoute(builder: (context) => Containerpage()),
+                        'SamplePage',
                       );
             }),
             IconButton(icon: Icon(Icons.image,color: Colors.grey[700],), onPressed: () {
@@ -205,114 +227,115 @@ class _SecondRouteState extends State<SecondRoute>
         height: double.infinity,
         margin: EdgeInsets.all(70),
         //color: Colors.grey,
-        child: Column(
-          children: <Widget>[
-              Text("Enter ur linux cmd :"),
-              TextField(
-                onChanged: (value) {
-                  cmd1 = value;
-                },
-              ),
-              /*Padding(
-                padding: const EdgeInsets.all(25.0),
-                child: FlatButton(
-                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                    color: Colors.grey[700],
-                      onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
-                      },
-                      child: Text('click here')),
-              ),*/
-              SizedBox(height: 25,),
-              MaterialButton(
-                height: MediaQuery.of(context).size.height/15,
-                minWidth: MediaQuery.of(context).size.width/3,
-                elevation: 5,
-                highlightColor: Colors.cyanAccent[700],
-                splashColor: Colors.cyanAccent,
-                color: Colors.grey[600],
-                animationDuration: Duration(seconds: 5),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)
+        child: ListView(
+            children: <Widget>[
+                //Text("Enter ur linux cmd :"),
+                TextField(
+        decoration: InputDecoration(hintText: 'Enter the Linux command here: '),
+        onChanged: (value) {
+          cmd1 = value;
+        },
                 ),
-                child: Text("Submit"),
-                onPressed: (){
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
-                },
-              ),/*
-              SizedBox(
-                height: 5,
-              ),
-              Text("output is been redirected.."),*/
-              SizedBox(height: 40,),
-              Text("Get complete control over :", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400,)),
-              /*Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: FlatButton(
-                  shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
-                  color: Colors.green,
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Containerpage()));
-                  }, child: Text('Container'),
-                ),
-              ),*/
-              SizedBox(height: 10,),
-              Padding(
-                padding: EdgeInsets.all(15.0),
-                child: MaterialButton(
-                  color: Colors.grey,
-                  splashColor: Colors.deepPurple,
-                  highlightColor: Colors.purple,
-                  elevation: 2,
-                  height: MediaQuery.of(context).size.height/13,
-                  minWidth: MediaQuery.of(context).size.width/2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
-                  ),
-                  child: Text('Container'),
-                  onPressed: (){
-                    Navigator.push(context, MaterialPageRoute(builder: (context)=> Containerpage()));
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(15.0),
-                child: MaterialButton(
-                  color: Colors.grey,
-                  splashColor: Colors.green[900],
-                  highlightColor: Colors.teal[800],
-                  elevation: 2,
-                  height: MediaQuery.of(context).size.height/13,
-                  minWidth: MediaQuery.of(context).size.width/2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
-                  ),
-                  child: Text('Volume'),
-                  onPressed: (){
-
-                  },
-                ),
-              ),
-              Padding(
-                padding: EdgeInsets.all(15.0),
-                child: MaterialButton(
-                  color: Colors.grey,
-                  splashColor: Colors.blue[900],
-                  highlightColor: Colors.indigo,
-                  height: MediaQuery.of(context).size.height/13,
-                  minWidth: MediaQuery.of(context).size.width/2,
-                  elevation: 2,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)
-                  ),
-                  child: Text('Network'),
-                  onPressed: (){
-
-                  },
-                ),
-              ),
-        ],
+                /*Padding(
+        padding: const EdgeInsets.all(25.0),
+        child: FlatButton(
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+            color: Colors.grey[700],
+              onPressed: () {
+              Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
+              },
+              child: Text('click here')),
+                ),*/
+                SizedBox(height: 25,),
+                MaterialButton(
+        height: MediaQuery.of(context).size.height/15,
+        minWidth: MediaQuery.of(context).size.width/3,
+        elevation: 5,
+        highlightColor: Colors.cyanAccent[700],
+        splashColor: Colors.cyanAccent,
+        color: Colors.grey[600],
+        animationDuration: Duration(seconds: 5),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(8)
         ),
+        child: Text("Submit"),
+        onPressed: (){
+          Navigator.push(context, MaterialPageRoute(builder: (context) => Cmdoutput()));
+        },
+                ),/*
+                SizedBox(
+        height: 5,
+                ),
+                Text("output is been redirected.."),*/
+                SizedBox(height: 40,),
+                Text("Get complete control over :", style: TextStyle(fontSize: 18, fontWeight: FontWeight.w400,)),
+                /*Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: FlatButton(
+          shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(30.0)),
+          color: Colors.green,
+          onPressed: (){
+            Navigator.push(context, MaterialPageRoute(builder: (context)=>Containerpage()));
+          }, child: Text('Container'),
+        ),
+                ),*/
+                SizedBox(height: 10,),
+                Padding(
+        padding: EdgeInsets.all(15.0),
+        child: MaterialButton(
+          color: Colors.grey,
+          splashColor: Colors.deepPurple,
+          highlightColor: Colors.purple,
+          elevation: 2,
+          height: MediaQuery.of(context).size.height/13,
+          minWidth: MediaQuery.of(context).size.width/2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15)
+          ),
+          child: Text('Container'),
+          onPressed: (){
+            Navigator.pushNamed(context, 'Containerpage');
+          },
+        ),
+                ),
+                Padding(
+        padding: EdgeInsets.all(15.0),
+        child: MaterialButton(
+          color: Colors.grey,
+          splashColor: Colors.green[900],
+          highlightColor: Colors.teal[800],
+          elevation: 2,
+          height: MediaQuery.of(context).size.height/13,
+          minWidth: MediaQuery.of(context).size.width/2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15)
+          ),
+          child: Text('Volume'),
+          onPressed: (){
+            Navigator.pushNamed(context, 'Volumepage');
+          },
+        ),
+                ),
+                Padding(
+        padding: EdgeInsets.all(15.0),
+        child: MaterialButton(
+          color: Colors.grey,
+          splashColor: Colors.blue[900],
+          highlightColor: Colors.indigo,
+          height: MediaQuery.of(context).size.height/13,
+          minWidth: MediaQuery.of(context).size.width/2,
+          elevation: 2,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15)
+          ),
+          child: Text('Network'),
+          onPressed: (){
+            Navigator.pushNamed(context, 'Networkpage');
+          },
+        ),
+                ),
+          ],
+          ),
       ),
       ),
     );
@@ -321,124 +344,6 @@ class _SecondRouteState extends State<SecondRoute>
   }
 }
 
-
-
-/*class Containerpage extends StatefulWidget {
-  @override
-  _ContainerpageState createState() => _ContainerpageState(); 
-}
-
-class _ContainerpageState extends State<Containerpage> {
-  var webdata;
-  var deletecontainer;
-  var inspectcontainer;
-  var os;
-
-  /*web(cmd) async {
-    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${cmd}";
-    var r = await http.get(url);
-
-    setState(() {
-      webdata = r.body;
-    });
-
-    // print(webdata);
-  }*/
-
-  create(name)async{
-    var url = "http://192.168.0.109/cgi-bin/cmd.py?x=${name}";
-    var r = await http.get(url);
-  setState(() {
-    webdata = r.body;
-  });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final pageheight = MediaQuery.of(context).size.height;
-    final pagewidth = MediaQuery.of(context).size.width;
-    return Scaffold(
-      appBar: AppBar(title: Text('Docker Container'),),
-      body: Column(
-          children: <Widget>[
-            
-            Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Center(
-                child: Container(
-                  child: Column(
-                    children: <Widget>[
-                      Container(child: Text('Input name of container to be created with centos operating system:', style: TextStyle(color: Colors.white),),),
-                      Container(
-                        margin: EdgeInsets.all(20),
-                        child: TextField(
-                          onChanged: (name){
-                            addcontainer = name;
-                          },
-                        ),
-                      ),
-                      FloatingActionButton.extended(
-                      label: Text('Submit'),
-                      onPressed: (){
-                        Navigator.push(context,
-                        MaterialPageRoute(builder: (context) => Containerop()));
-                        //create(addcontainer)
-                      },),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(webdata ?? 'Output'),
-                      ),
-                      Container(child: Text('Input name of container to be deleted:', style: TextStyle(color: Colors.white),),),
-                      Container(
-                        height: pageheight/8,
-                        width: pagewidth/2,
-                        child: TextField(
-                          onChanged: (name){
-                            deletecontainer = name;
-                          },
-                        ),
-                      ),
-                      Container(child: Text('Input name of container to be inspected:', style: TextStyle(color: Colors.white),),),
-                      Container(
-                        height: pageheight/8,
-                        width: pagewidth/2,
-                        child: TextField(
-                          onChanged: (containercommand){
-                            //cmd = containercommand;
-                          },
-                        ),
-                      ),
-                      Container(child: Text('Input name of container to get the ip:', style: TextStyle(color: Colors.white),),),
-                      Container(
-                        height: pageheight/8,
-                        width: pagewidth/2,
-                        child: TextField(
-                          onChanged: (containercommand){
-                            //cmd = containercommand;
-                          },
-                        ),
-                      ),
-                      /*Container(child: Text('Input name of container to be created:', style: TextStyle(color: Colors.white),),),
-                      Container(
-                        height: pageheight/8,
-                        width: pagewidth/2,
-                        child: TextField(
-                          onChanged: (containercommand){
-                            //cmd = containercommand;
-                          },
-                        ),
-                      ),*/
-                    ],
-                  ),
-                ),
-              ),
-            )
-          ],
-        ),
-    );
-  }
-}
-*/
 
 
 class Containeroutput extends StatelessWidget {
@@ -456,10 +361,8 @@ class Containeroutput extends StatelessWidget {
               child: ListView.builder(
                 controller: scrollController,
                 itemBuilder: (BuildContext context, int index) {
-                  return Container(
-                    height: 600,
-                    width: 600,
-                    color: Colors.blue,
+                  return Scaffold(
+                    
                   );
                 },
               ),
@@ -627,7 +530,7 @@ class _ContaineropState extends State<Containerop> {
   }*/
 
   create(name)async{
-    var url = "http://192.168.0.109/cgi-bin/createcont.py?x=${name}";
+    var url = "http://192.168.43.171/cgi-bin/createcont.py?x=${name}";
     var r = await http.get(url);
   setState(() {
     webdata = r.body;
